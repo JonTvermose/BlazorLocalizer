@@ -1,6 +1,8 @@
 # BlazorLocalizer
 
-A library to provide asynchronous localization in Blazor WebAssembly applications.
+A library to provide asynchronous localization in Blazor WebAssembly applications. Caches localized values in memory and i `localStorage` for a configurable amount of time.
+
+[![Nuget](https://img.shields.io/nuget/v/tvermose.blazorlocalizer.svg)](https://www.nuget.org/packages/Tvermose.BlazorLocalizer/)
 
 ## Installing
 You can install from NuGet using the following command:
