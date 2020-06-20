@@ -1,0 +1,44 @@
+﻿@using System.Globalization
+@inject Internal.ResourceCache cache
+@inject Blazored.LocalStorage.ILocalStorageService storageService
+@inject IResourceProvider resourceProvider
+@inject Microsoft.Extensions.Options.IOptions<BlazorLocalizerOptions> options
+
+@if (_hasLoaded)
+{
+    @_displayValue
+}
+else if(options.Value.ShowKeyAsPlaceholder)
+{
+    @Key
+}
+
+@code {
+    [Parameter]
+    public string Key { get; set; }
+
+    [Parameter]
+    public string Category { get; set; }
+
+    [Parameter]
+    public string CultureName { get; set; }
+
+    private string _displayValue;
+
+    private bool _hasLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(!string.IsNullOrWhiteSpace(Key) && !string.IsNullOrWhiteSpace(Category))
+        {
+            var culture = CultureName;
+            if (string.IsNullOrWhiteSpace(culture))
+            {
+                culture = CultureInfo.CurrentUICulture.Name;
+            }
+            _displayValue = await cache.GetResource(Key, culture, Category, resourceProvider, storageService);
+            _hasLoaded = true;
+            this.StateHasChanged();
+        }
+    }
+}
