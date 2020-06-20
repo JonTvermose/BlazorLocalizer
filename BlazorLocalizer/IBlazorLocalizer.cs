@@ -8,18 +8,28 @@ namespace BlazorLocalizer
     {
 
         /// <summary>
+        /// Localize a key using the fallback category (if any)
+        /// </summary>
+        /// <returns>The localized value</returns>
+        RenderFragment this[string key] { get; }
+
+        /// <summary>
+        /// Localize a key using the fallback category (if any)
+        /// </summary>
+        /// <returns>The localized value</returns>
+        RenderFragment this[string key, CultureInfo culture] { get; }
+
+        /// <summary>
         /// Localize a key. The category will be set as o.GetType().FullName
         /// </summary>
         /// <returns>The localized value</returns>
         RenderFragment this[string key, object o] { get; }
-
 
         /// <summary>
         /// Localize a key. The category will be set as o.GetType().FullName
         /// </summary>
         /// <returns>The localized value</returns>
         RenderFragment this[string key, object o, CultureInfo culture] { get; }
-
 
         /// <summary>
         /// Localize a key. The category will be set as o.GetType().FullName
@@ -62,6 +72,18 @@ namespace BlazorLocalizer
         /// </summary>
         /// <returns>The localized value</returns>
         Task<string> L(string key, object o, string cultureName);
+
+        /// <summary>
+        /// Localize a key using the fallback category (if any)
+        /// </summary>
+        /// <returns>The localized value</returns>
+        Task<string> L(string key);
+
+        /// <summary>
+        /// Localize a key using the fallback category (if any)
+        /// </summary>
+        /// <returns>The localized value</returns>
+        Task<string> L(string key, CultureInfo culture);
 
         /// <summary>
         /// Localize a key.

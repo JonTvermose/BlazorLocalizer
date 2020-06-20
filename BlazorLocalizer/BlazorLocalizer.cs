@@ -1,10 +1,5 @@
 ﻿using BlazorLocalizer.Components;
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
@@ -25,17 +20,21 @@ namespace BlazorLocalizer
             _localStorageService = localStorageService;
         }
 
-        private RenderFragment GetLocalizedComponent(string key, string category, string culture)
+        #region interface implementation
+        public RenderFragment this[string key, CultureInfo culture]
         {
-            RenderFragment result = l =>
+            get
             {
-                l.OpenComponent(1, typeof(Localized));
-                l.AddAttribute(2, "Key", key);
-                l.AddAttribute(3, "Category", category);
-                l.AddAttribute(4, "CultureName", culture);
-                l.CloseComponent();
-            };
-            return result;
+                return GetLocalizedComponent(key, null, culture.Name);
+            }
+        }
+
+        public RenderFragment this[string key]
+        {
+            get
+            {
+                return GetLocalizedComponent(key, null, CultureInfo.CurrentUICulture.Name);
+            }
         }
 
         public RenderFragment this[string key, object o]
@@ -88,32 +87,32 @@ namespace BlazorLocalizer
 
         public async Task<string> L(string key, string category)
         {
-            return await _resourceCache.GetResource(key, category, CultureInfo.CurrentUICulture.Name, _resourceProvider, _localStorageService);
+            return await GetLocalizedValue(key, category, CultureInfo.CurrentUICulture.Name);
         }
 
         public async Task<string> L(string key, object o)
         {
-            return await _resourceCache.GetResource(key, o.GetType().FullName, CultureInfo.CurrentUICulture.Name, _resourceProvider, _localStorageService);
+            return await GetLocalizedValue(key, o.GetType().FullName, CultureInfo.CurrentUICulture.Name);
         }
 
         public async Task<string> L(string key, string category, CultureInfo culture)
         {
-            return await _resourceCache.GetResource(key, category, culture.Name, _resourceProvider, _localStorageService);
+            return await GetLocalizedValue(key, category, culture.Name);
         }
 
         public async Task<string> L(string key, object o, CultureInfo culture)
         {
-            return await _resourceCache.GetResource(key, o.GetType().FullName, culture.Name, _resourceProvider, _localStorageService);
+            return await GetLocalizedValue(key, o.GetType().FullName, culture.Name);
         }
 
         public async Task<string> L(string key, string category, string cultureName)
         {
-            return await _resourceCache.GetResource(key, category, cultureName, _resourceProvider, _localStorageService);
+            return await GetLocalizedValue(key, category, cultureName);
         }
 
         public async Task<string> L(string key, object o, string cultureName)
         {
-            return await _resourceCache.GetResource(key, o.GetType().FullName, cultureName, _resourceProvider, _localStorageService);
+            return await GetLocalizedValue(key, o.GetType().FullName, cultureName);
         }
 
         public async Task ClearCache()
@@ -126,5 +125,35 @@ namespace BlazorLocalizer
             await _resourceCache.ClearCache(category, cultureName, _localStorageService);
         }
 
+        public async Task<string> L(string key)
+        {
+            return await L(key, CultureInfo.CurrentUICulture);
+        }
+
+        public async Task<string> L(string key, CultureInfo culture)
+        {
+            return await L(key, null, culture);
+        }
+        #endregion
+
+        #region private methods
+        private async Task<string> GetLocalizedValue(string key, string category, string culture)
+        {
+            return await _resourceCache.GetResource(key, category, culture, _resourceProvider, _localStorageService);
+        }
+
+        private RenderFragment GetLocalizedComponent(string key, string category, string culture)
+        {
+            RenderFragment result = l =>
+            {
+                l.OpenComponent(1, typeof(Localized));
+                l.AddAttribute(2, "Key", key);
+                l.AddAttribute(3, "Category", category);
+                l.AddAttribute(4, "CultureName", culture);
+                l.CloseComponent();
+            };
+            return result;
+        }
+        #endregion
     }
 }
