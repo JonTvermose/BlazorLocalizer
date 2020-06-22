@@ -139,7 +139,7 @@ namespace BlazorLocalizer
         #region private methods
         private async Task<string> GetLocalizedValue(string key, string category, string culture)
         {
-            return await _resourceCache.GetResource(key, category, culture, _resourceProvider, _localStorageService);
+            return await _resourceCache.GetResource(key, culture, category, _resourceProvider, _localStorageService);
         }
 
         private RenderFragment GetLocalizedComponent(string key, string category, string culture)

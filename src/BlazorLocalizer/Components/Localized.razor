@@ -29,7 +29,7 @@ else if(options.Value.ShowKeyAsPlaceholder)
 
     protected override async Task OnInitializedAsync()
     {
-        if(!string.IsNullOrWhiteSpace(Key) && !string.IsNullOrWhiteSpace(Category))
+        if(!string.IsNullOrWhiteSpace(Key))
         {
             var culture = CultureName;
             if (string.IsNullOrWhiteSpace(culture))

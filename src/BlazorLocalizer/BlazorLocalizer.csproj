@@ -6,7 +6,7 @@
     
     <Authors>Jon Tvermose Nielsen</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>Blazor, Localizer, Blazor localizer, blazor component, localized, blazor async localizer</PackageTags>
+    <PackageTags>Blazor, Localizer, Blazor localizer, blazor component, localized, blazor async localizer, localization, blazor localization</PackageTags>
     <PackageId>Tvermose.BlazorLocalizer</PackageId>
     <Product>Async Blazor Localizer</Product>
     <Description>Blazor Localization that supports fetching localized texts asynchronously, for example from your backend API.
@@ -17,7 +17,7 @@ Please refer to readme or project URL for a complete setup and usage guide.</Des
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>Preview release</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JonTvermose/BlazorLocalizer</RepositoryUrl>
-    <Version>0.9.1</Version>
+    <Version>0.9.2</Version>
     <Copyright />
     <PackageProjectUrl>https://github.com/JonTvermose/BlazorLocalizer</PackageProjectUrl>
     <RepositoryType>Github</RepositoryType>
