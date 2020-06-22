@@ -14,6 +14,8 @@ Or via the Visual Studio package manager.
 ## Setup
 You will need to implement the interface `BlazorLocalizer.IResourceProvider` and register the implementation with the service collection in your <i>Program.cs</i> in Blazor WebAssembly.
 
+Likewise you will need to register the IBlazorLocalizer by using the extension method `AddBlazorLocalization()`.
+
 ```c#
 public static async Task Main(string[] args)
 {
