@@ -1,0 +1,28 @@
+﻿@page "/counter"
+@inject IBlazorLocalizer loc
+
+<h1>@loc["Counter", this]</h1>
+
+<p>@loc["Current count:", this] @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">@loc["Click me", this]</button>
+
+<p>@loc["This text on page Counter.razor has no translation - hence ResourceProviderImplementation.AddMissingKey() will be called", this]</p>
+
+@code {
+    private int currentCount = 0;
+
+    private string _titleText = "Example of text being localized on a html attribute";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _titleText = await loc.L(_titleText, this); 
+
+        this.StateHasChanged();
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

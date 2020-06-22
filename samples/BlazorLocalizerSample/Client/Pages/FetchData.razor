@@ -1,0 +1,49 @@
+@page "/fetchdata"
+@using BlazorLocalizerSample.Shared
+@inject HttpClient Http
+@inject IBlazorLocalizer loc
+
+<h1>@loc["Weather forecast", this]</h1>
+
+<p>@loc["This component demonstrates fetching data from the server.", this]</p>
+
+@if (forecasts == null)
+{
+    <p><em>@loc["Loading..."]</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@loc["Date", this]</th>
+                <th>@loc["Temp. (C)", this]</th>
+                <th>@loc["Temp. (F)", this]</th>
+                <th>@loc["Summary", this]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<p>@loc["This text on page FetchData.razor has no translation - hence ResourceProviderImplementation.AddMissingKey() will be called", this]</p>
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+    }
+
+}
