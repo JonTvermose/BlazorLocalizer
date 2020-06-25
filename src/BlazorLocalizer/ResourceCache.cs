@@ -23,6 +23,8 @@ namespace BlazorLocalizer.Internal
 
         public async Task<string> GetResource(string key, string culture, string category, IResourceProvider provider, ILocalStorageService localStorageService)
         {
+            var comparer = StringComparer.OrdinalIgnoreCase;
+
             if (string.IsNullOrWhiteSpace(category) && _options.FallbackCategory != null)
             {
                 category = _options.FallbackCategory;
@@ -31,6 +33,7 @@ namespace BlazorLocalizer.Internal
             if (_options.MemoryCacheDisabled)
             {
                 var categoryResult = await provider.GetCategoryResources(category, culture);
+                categoryResult = new Dictionary<string, string>(categoryResult, comparer);
                 if (categoryResult.TryGetValue(key, out var res))
                 {
                     return res;
@@ -59,7 +62,7 @@ namespace BlazorLocalizer.Internal
                         updatedTime = updatedTime.Add(cacheInvalidation);
                         var now = DateTime.UtcNow.Ticks;
                         var updatedTicks = updatedTime.Ticks;
-                        if (updatedTicks <= now) 
+                        if (updatedTicks <= now)
                         {
                             cachedCultureCategory = cachedCategory;
                         }
@@ -74,6 +77,7 @@ namespace BlazorLocalizer.Internal
                     if (cachedCultureCategory == null)
                     {
                         var resources = await provider.GetCategoryResources(category, culture);
+                        resources = new Dictionary<string, string>(resources, comparer);
                         cachedCultureCategory = new CultureCategoryResources
                         {
                             Category = category,
@@ -92,6 +96,7 @@ namespace BlazorLocalizer.Internal
             }
 
             await _semaphore.WaitAsync();
+            cachedCultureCategory.Resources = new Dictionary<string, string>(cachedCultureCategory.Resources, comparer);
             if (cachedCultureCategory.Resources.TryGetValue(key, out var result))
             {
                 _semaphore.Release();
