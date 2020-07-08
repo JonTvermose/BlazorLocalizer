@@ -50,29 +50,22 @@ namespace BlazorLocalizer.Internal
             var cachedCultureCategory = _cache.SingleOrDefault(x => x.Category == category && x.Culture == culture);
             if (cachedCultureCategory == null)
             {
+                await _semaphore.WaitAsync();
+
                 if (!_options.LocalStorageOptions.CacheDisabled)
                 {
-                    await _semaphore.WaitAsync();
                     var cachedCategory = await localStorageService.GetItemAsync<CultureCategoryResources>(categoryKey);
                     if (cachedCategory != null) 
                     {
-                        // Seems to be a bug where datetimes cannot be compared. So some ugly code to go around that bug..
-                        var updatedTime = cachedCategory.UpdatedTime;
-                        var cacheInvalidation = _options.LocalStorageOptions.CacheInvalidation;
-                        updatedTime = updatedTime.Add(cacheInvalidation);
-                        var now = DateTime.UtcNow.Ticks;
-                        var updatedTicks = updatedTime.Ticks;
-                        if (updatedTicks <= now)
+                        if(cachedCategory.UpdatedTime.Add(_options.LocalStorageOptions.CacheInvalidation) > DateTime.UtcNow)
                         {
                             cachedCultureCategory = cachedCategory;
                         }
                     }
-                    _semaphore.Release();
                 }
 
                 if (cachedCultureCategory == null)
                 {
-                    await _semaphore.WaitAsync();
                     cachedCultureCategory = _cache.SingleOrDefault(x => x.Category == category && x.Culture == culture);
                     if (cachedCultureCategory == null)
                     {
@@ -91,8 +84,8 @@ namespace BlazorLocalizer.Internal
                             await localStorageService.SetItemAsync(categoryKey, cachedCultureCategory);
                         }
                     }
-                    _semaphore.Release();
                 }
+                _semaphore.Release();
             }
 
             await _semaphore.WaitAsync();
@@ -110,7 +103,6 @@ namespace BlazorLocalizer.Internal
                 }
             }
             _semaphore.Release();
-
             await provider.AddMissingKey(category, culture, key);
 
             return key;
