@@ -7,7 +7,7 @@
     <Authors>Jon Tvermose Nielsen</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Blazor, localizer, component, localization, localization, webassembly</PackageTags>
-    <PackageId>BlazorLocalizer</PackageId>
+    <PackageId>Tvermose.BlazorLocalizer</PackageId>
     <Product>Async Blazor Localizer</Product>
     <Description>Blazor Webassembly Localization that supports fetching localized texts asynchronously, for example from your backend API.
 Inject 'IBlazorLocalizer Loc' and use 'Loc["LocalizedStringKeyHere"]'  or use the component &lt;Localized&gt; to localize your texts.
