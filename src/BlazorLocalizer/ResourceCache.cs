@@ -47,10 +47,11 @@ namespace BlazorLocalizer.Internal
 
             var categoryKey = $"{category}-{culture}";
 
+
+            await _semaphore.WaitAsync();
             var cachedCultureCategory = _cache.SingleOrDefault(x => x.Category == category && x.Culture == culture);
             if (cachedCultureCategory == null)
             {
-                await _semaphore.WaitAsync();
 
                 if (!_options.LocalStorageOptions.CacheDisabled)
                 {
@@ -85,11 +86,8 @@ namespace BlazorLocalizer.Internal
                         }
                     }
                 }
-                _semaphore.Release();
             }
 
-            await _semaphore.WaitAsync();
-            cachedCultureCategory.Resources = new Dictionary<string, string>(cachedCultureCategory.Resources, comparer);
             if (cachedCultureCategory.Resources.TryGetValue(key, out var result))
             {
                 _semaphore.Release();
