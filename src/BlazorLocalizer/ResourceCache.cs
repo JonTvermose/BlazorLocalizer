@@ -88,6 +88,7 @@ namespace BlazorLocalizer.Internal
                 }
             }
 
+            cachedCultureCategory.Resources = new Dictionary<string, string>(cachedCultureCategory.Resources, comparer);
             if (cachedCultureCategory.Resources.TryGetValue(key, out var result))
             {
                 _semaphore.Release();
