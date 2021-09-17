@@ -2,8 +2,9 @@
 using BlazorLocalizer.Models;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,13 +12,13 @@ namespace BlazorLocalizer.Internal
 {
     internal class ResourceCache
     {
-        private List<CultureCategoryResources> _cache;
+        private ConcurrentDictionary<string, CultureCategoryResources> _memCache;
         private BlazorLocalizerOptions _options;
         private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public ResourceCache(IOptions<BlazorLocalizerOptions> options)
         {
-            _cache = new List<CultureCategoryResources>();
+            _memCache = new(StringComparer.OrdinalIgnoreCase);
             _options = options.Value;
         }
 
@@ -47,48 +48,62 @@ namespace BlazorLocalizer.Internal
 
             var categoryKey = $"{category}-{culture}";
 
+            // Memory cache hit (fastest)
+            if (_memCache.TryGetValue(categoryKey, out var cachedCultureCategory))
+            {
+                if (cachedCultureCategory.Resources.TryGetValue(key, out var memResult))
+                {
+                    return memResult;
+                }
+            }
 
             await _semaphore.WaitAsync();
-            var cachedCultureCategory = _cache.SingleOrDefault(x => x.Category == category && x.Culture == culture);
+
+            // Memory cache was populated while waiting on semaphore (still fast)
+            if (_memCache.TryGetValue(categoryKey, out cachedCultureCategory))
+            {
+                if (cachedCultureCategory.Resources.TryGetValue(key, out var memResult))
+                {
+                    _semaphore.Release();
+                    return memResult;
+                }
+            }
+
             if (cachedCultureCategory == null)
             {
-
                 if (!_options.LocalStorageOptions.CacheDisabled)
                 {
                     var cachedCategory = await localStorageService.GetItemAsync<CultureCategoryResources>(categoryKey);
-                    if (cachedCategory != null) 
+                    if (cachedCategory != null)
                     {
-                        if(cachedCategory.UpdatedTime.Add(_options.LocalStorageOptions.CacheInvalidation) > DateTime.UtcNow)
+                        if (cachedCategory.UpdatedTime.Add(_options.LocalStorageOptions.CacheInvalidation) > DateTime.UtcNow)
                         {
                             cachedCultureCategory = cachedCategory;
+                            cachedCultureCategory.Resources = new Dictionary<string, string>(cachedCultureCategory.Resources, comparer);
+                            _memCache.TryAdd(categoryKey, cachedCultureCategory);
                         }
                     }
                 }
 
                 if (cachedCultureCategory == null)
                 {
-                    cachedCultureCategory = _cache.SingleOrDefault(x => x.Category == category && x.Culture == culture);
-                    if (cachedCultureCategory == null)
+                    var resources = await provider.GetCategoryResources(category, culture);
+                    resources = new Dictionary<string, string>(resources, comparer);
+                    cachedCultureCategory = new CultureCategoryResources
                     {
-                        var resources = await provider.GetCategoryResources(category, culture);
-                        resources = new Dictionary<string, string>(resources, comparer);
-                        cachedCultureCategory = new CultureCategoryResources
-                        {
-                            Category = category,
-                            Culture = culture,
-                            Resources = resources,
-                            UpdatedTime = DateTime.UtcNow
-                        };
-                        _cache.Add(cachedCultureCategory);
-                        if (!_options.LocalStorageOptions.CacheDisabled)
-                        {
-                            await localStorageService.SetItemAsync(categoryKey, cachedCultureCategory);
-                        }
+                        Category = category,
+                        Culture = culture,
+                        Resources = resources,
+                        UpdatedTime = DateTime.UtcNow
+                    };
+                    _memCache.TryAdd(categoryKey, cachedCultureCategory);
+                    if (!_options.LocalStorageOptions.CacheDisabled)
+                    {
+                        await localStorageService.SetItemAsync(categoryKey, cachedCultureCategory);
                     }
                 }
             }
 
-            cachedCultureCategory.Resources = new Dictionary<string, string>(cachedCultureCategory.Resources, comparer);
             if (cachedCultureCategory.Resources.TryGetValue(key, out var result))
             {
                 _semaphore.Release();
