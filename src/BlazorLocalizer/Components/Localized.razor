@@ -34,7 +34,7 @@ else if(options.Value.ShowKeyAsPlaceholder)
             var culture = CultureName;
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = CultureInfo.CurrentUICulture.Name;
+                culture = await resourceProvider.GetCultureName();
             }
             _displayValue = await cache.GetResource(Key, culture, Category, resourceProvider, storageService);
             _hasLoaded = true;

@@ -16,18 +16,18 @@ Please refer to readme or project URL for a complete setup and usage guide.</Des
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JonTvermose/BlazorLocalizer</RepositoryUrl>
-    <Version>7.0.0</Version>
+    <Version>7.0.1</Version>
     <Copyright />
     <PackageProjectUrl>https://github.com/JonTvermose/BlazorLocalizer</PackageProjectUrl>
     <RepositoryType>Github</RepositoryType>
-    <AssemblyVersion>7.0.0.0</AssemblyVersion>
-    <FileVersion>7.0.0.0</FileVersion>
+    <AssemblyVersion>7.0.1.0</AssemblyVersion>
+    <FileVersion>7.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
