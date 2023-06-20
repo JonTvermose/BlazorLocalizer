@@ -24,5 +24,11 @@ namespace BlazorLocalizer
         /// <param name="key">The requested key that was not found</param>
         /// <returns></returns>
         Task AddMissingKey(string category, string cultureName, string key);
+
+        /// <summary>
+        /// Retrieve the name of the culture to used as a fallback in case a specific culture is not given
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetCultureName();
     }
 }

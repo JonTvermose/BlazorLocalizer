@@ -12,6 +12,7 @@ namespace BlazorLocalizer
         private readonly ResourceCache _resourceCache;
         private readonly IResourceProvider _resourceProvider;
         private readonly ILocalStorageService _localStorageService;
+        private string _fallBackCultureName;
 
         public BlazorLocalizer(ResourceCache resourceCache, IResourceProvider resourceProvider, ILocalStorageService localStorageService)
         {
@@ -33,7 +34,7 @@ namespace BlazorLocalizer
         {
             get
             {
-                return GetLocalizedComponent(key, null, CultureInfo.CurrentUICulture.Name);
+                return GetLocalizedComponent(key, null, null);
             }
         }
 
@@ -41,7 +42,7 @@ namespace BlazorLocalizer
         {
             get
             {
-                return GetLocalizedComponent(key, o.GetType().FullName, CultureInfo.CurrentUICulture.Name);
+                return GetLocalizedComponent(key, o.GetType().FullName, null);
             }
         }
 
@@ -49,7 +50,7 @@ namespace BlazorLocalizer
         {
             get
             {
-                return GetLocalizedComponent(key, category, CultureInfo.CurrentUICulture.Name);
+                return GetLocalizedComponent(key, category, null);
             }
         }
 
@@ -87,12 +88,12 @@ namespace BlazorLocalizer
 
         public async Task<string> L(string key, string category)
         {
-            return await GetLocalizedValue(key, category, CultureInfo.CurrentUICulture.Name);
+            return await GetLocalizedValue(key, category, null);
         }
 
         public async Task<string> L(string key, object o)
         {
-            return await GetLocalizedValue(key, o.GetType().FullName, CultureInfo.CurrentUICulture.Name);
+            return await GetLocalizedValue(key, o.GetType().FullName, null);
         }
 
         public async Task<string> L(string key, string category, CultureInfo culture)
@@ -139,6 +140,14 @@ namespace BlazorLocalizer
         #region private methods
         private async Task<string> GetLocalizedValue(string key, string category, string culture)
         {
+            if (string.IsNullOrWhiteSpace(culture))
+            {
+                if (string.IsNullOrWhiteSpace(_fallBackCultureName))
+                {
+                    _fallBackCultureName = (await _resourceProvider.GetCultureName()) ?? CultureInfo.CurrentUICulture.Name;
+                }
+                culture = _fallBackCultureName;
+            }
             return await _resourceCache.GetResource(key, culture, category, _resourceProvider, _localStorageService);
         }
 
