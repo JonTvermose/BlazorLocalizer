@@ -19,12 +19,6 @@ namespace BlazorLocalizer
         public bool MemoryCacheDisabled { get; set; } = false;
 
         /// <summary>
-        /// When using the localizer without a category (null, empty or whitespaces) - fallback to this value.
-        /// </summary>
-        /// <remarks>Default value is null</remarks>
-        public string FallbackCategory { get; set; } = null;
-
-        /// <summary>
         /// When localizing text in HTML, show the key as a placeholder untill the localized value has been fetched
         /// </summary>
         /// <remarks>Default value is true</remarks>

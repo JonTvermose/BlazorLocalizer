@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,11 +24,6 @@ namespace BlazorLocalizer.Internal
         public async Task<string> GetResource(string key, string culture, string category, IResourceProvider provider, ILocalStorageService localStorageService)
         {
             var comparer = StringComparer.OrdinalIgnoreCase;
-
-            if (string.IsNullOrWhiteSpace(category) && _options.FallbackCategory != null)
-            {
-                category = _options.FallbackCategory;
-            }
 
             if (_options.MemoryCacheDisabled)
             {

@@ -23,7 +23,6 @@ namespace BlazorLocalizerSample.Client
             builder.Services.AddTransient<IResourceProvider, ResourceProviderImplementation>();
 
             builder.Services.AddBlazorLocalization(config => {
-                config.FallbackCategory = "BlazorLocalizerSample.GlobalTexts";
                 config.ShowKeyAsPlaceholder = true;
                 config.LocalStorageOptions.CacheInvalidation = TimeSpan.FromMinutes(10);
             });

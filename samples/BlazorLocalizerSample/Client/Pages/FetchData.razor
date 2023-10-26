@@ -3,9 +3,9 @@
 @inject HttpClient Http
 @inject IBlazorLocalizer loc
 
-<h1>@loc["Weather forecast", this]</h1>
+<h1>@loc["Weather forecast"]</h1>
 
-<p>@loc["This component demonstrates fetching data from the server.", this]</p>
+<p>@loc["This component demonstrates fetching data from the server."]</p>
 
 @if (forecasts == null)
 {
@@ -16,10 +16,10 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>@loc["Date", this]</th>
-                <th>@loc["Temp. (C)", this]</th>
-                <th>@loc["Temp. (F)", this]</th>
-                <th>@loc["Summary", this]</th>
+                <th>@loc["Date"]</th>
+                <th>@loc["Temp. (C)"]</th>
+                <th>@loc["Temp. (F)"]</th>
+                <th>@loc["Summary"]</th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@ else
     </table>
 }
 
-<p>@loc["This text on page FetchData.razor has no translation - hence ResourceProviderImplementation.AddMissingKey() will be called", this]</p>
+<p>@loc["This text on page FetchData.razor has no translation - hence ResourceProviderImplementation.AddMissingKey() will be called"]</p>
 
 @code {
     private WeatherForecast[] forecasts;

@@ -1,13 +1,13 @@
 ﻿@page "/counter"
 @inject IBlazorLocalizer loc
 
-<h1>@loc["Counter", this]</h1>
+<h1>@loc["Counter"]</h1>
 
-<p>@loc["Current count:", this] @currentCount</p>
+<p>@loc["Current count:"] @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">@loc["Click me", this]</button>
+<button class="btn btn-primary" @onclick="IncrementCount">@loc["Click me"]</button>
 
-<p>@loc["This text on page Counter.razor has no translation - hence ResourceProviderImplementation.AddMissingKey() will be called", this]</p>
+<p>@loc["This text on page Counter.razor has no translation - hence ResourceProviderImplementation.AddMissingKey() will be called"]</p>
 
 @code {
     private int currentCount = 0;
@@ -16,7 +16,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _titleText = await loc.L(_titleText, this); 
+        _titleText = await loc.L(_titleText); 
 
         this.StateHasChanged();
     }

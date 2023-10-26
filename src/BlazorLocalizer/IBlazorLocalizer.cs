@@ -20,24 +20,6 @@ namespace BlazorLocalizer
         RenderFragment this[string key, CultureInfo culture] { get; }
 
         /// <summary>
-        /// Localize a key. The category will be set as o.GetType().FullName
-        /// </summary>
-        /// <returns>The localized value</returns>
-        RenderFragment this[string key, object o] { get; }
-
-        /// <summary>
-        /// Localize a key. The category will be set as o.GetType().FullName
-        /// </summary>
-        /// <returns>The localized value</returns>
-        RenderFragment this[string key, object o, CultureInfo culture] { get; }
-
-        /// <summary>
-        /// Localize a key. The category will be set as o.GetType().FullName
-        /// </summary>
-        /// <returns>The localized value</returns>
-        RenderFragment this[string key, object o, string cultureName] { get; }
-
-        /// <summary>
         /// Localize a key.
         /// </summary>
         /// <returns>The localized value</returns>
@@ -54,24 +36,6 @@ namespace BlazorLocalizer
         /// </summary>
         /// <returns>The localized value</returns>
         RenderFragment this[string key, string category, string cultureName] { get; }
-
-        /// <summary>
-        /// Localize a key. The category will be set as o.GetType().FullName
-        /// </summary>
-        /// <returns>The localized value</returns>
-        Task<string> L(string key, object o);
-
-        /// <summary>
-        /// Localize a key. The category will be set as o.GetType().FullName
-        /// </summary>
-        /// <returns>The localized value</returns>
-        Task<string> L(string key, object o, CultureInfo culture);
-
-        /// <summary>
-        /// Localize a key. The category will be set as o.GetType().FullName
-        /// </summary>
-        /// <returns>The localized value</returns>
-        Task<string> L(string key, object o, string cultureName);
 
         /// <summary>
         /// Localize a key using the fallback category (if any)
