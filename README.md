@@ -40,7 +40,6 @@ public static async Task Main(string[] args)
     
     builder.Services.AddTransient<BlazorLocalizer.IResourceProvider, YourResourceProviderImplementation>();
     builder.Services.AddBlazorLocalization(config => {
-      config.FallbackCategory = "Your.Fallback.Category";
       config.LocalStorageOptions.CacheInvalidation = TimeSpan.FromDays(1);
       config.LocalStorageOptions.CacheDisabled = false;
     });
@@ -55,6 +54,7 @@ To use BlazorLocalization in Blazor WebAssembly, inject the `IBlazorLocalizer`as
 @inject BlazorLocalizer.IBlazorLocalizer loc
 
 <p title=@_title>
+  @loc["Localize this text using the calling class fullname as category"]
   @loc["Localize this text", "Example.Category"]
 </p>
 
@@ -70,7 +70,7 @@ To use BlazorLocalization in Blazor WebAssembly, inject the `IBlazorLocalizer`as
 }
 ```
 
-If you do not provide a category for the localized text (null, empty or white space), `FallbackCategory` from your options will be used if that has been set.
+If you do not provide a category for the localized text, the calling class fullname will be used as category.
 
 ## Usage (Blazor Server)
 Not currently supported.
