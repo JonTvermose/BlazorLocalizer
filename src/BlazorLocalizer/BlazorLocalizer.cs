@@ -39,6 +39,14 @@ namespace BlazorLocalizer
       }
     }
 
+    public RenderFragment this[string key, object o]
+    {
+      get
+      {
+        return GetLocalizedComponent(key, o.GetType().FullName, null);
+      }
+    }
+
     public RenderFragment this[string key, string category]
     {
       get
@@ -130,7 +138,7 @@ namespace BlazorLocalizer
     {
       var frames = new StackTrace().GetFrames();
       var currentNamespace = this.GetType().FullName;
-      for(var i = 0; i < frames.Length; i++)
+      for (var i = 0; i < frames.Length; i++)
       {
         var methodInfo = frames[i].GetMethod();
         var nameSpace = methodInfo.ReflectedType.FullName;
