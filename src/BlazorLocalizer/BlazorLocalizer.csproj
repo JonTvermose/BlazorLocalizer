@@ -22,6 +22,7 @@ Please refer to readme or project URL for a complete setup and usage guide.</Des
     <RepositoryType>Github</RepositoryType>
     <AssemblyVersion>10.1.0.0</AssemblyVersion>
     <FileVersion>10.1.0.0</FileVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,5 +37,8 @@ Please refer to readme or project URL for a complete setup and usage guide.</Des
       <PackagePath>\</PackagePath>
     </Content>
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>
