@@ -147,6 +147,11 @@ namespace BlazorLocalizer
       }
       return null;
     }
+
+    public Task<string> L(string key, object o)
+    {
+      return GetLocalizedValue(key, o.GetType().FullName, null);
+    }
     #endregion
   }
 }

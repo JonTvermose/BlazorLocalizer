@@ -19,7 +19,6 @@ namespace BlazorLocalizer
     /// <returns>The localized value</returns>
     RenderFragment this[string key, object o] { get; }
 
-
     /// <summary>
     /// Localize a key using the fallback category (if any)
     /// </summary>
@@ -55,6 +54,12 @@ namespace BlazorLocalizer
     /// </summary>
     /// <returns>The localized value</returns>
     Task<string> L(string key, CultureInfo culture);
+
+    /// <summary>
+    /// Localize a key. Object namespace will be used as category.
+    /// </summary>
+    /// <returns>The localized value</returns>
+    Task<string> L(string key, object o);
 
     /// <summary>
     /// Localize a key.

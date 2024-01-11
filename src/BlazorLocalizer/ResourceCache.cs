@@ -81,6 +81,8 @@ namespace BlazorLocalizer.Internal
 
                 if (cachedCultureCategory == null)
                 {
+                    try
+          {
                     var resources = await provider.GetCategoryResources(category, culture);
                     resources = new Dictionary<string, string>(resources, comparer);
                     cachedCultureCategory = new CultureCategoryResources
@@ -90,7 +92,13 @@ namespace BlazorLocalizer.Internal
                         Resources = resources,
                         UpdatedTime = DateTime.UtcNow
                     };
+
                     _memCache.TryAdd(categoryKey, cachedCultureCategory);
+          }
+          catch
+          {
+
+          }
                     if (!_options.LocalStorageOptions.CacheDisabled)
                     {
                         await localStorageService.SetItemAsync(categoryKey, cachedCultureCategory);
