@@ -124,6 +124,50 @@ namespace BlazorLocalizer.Internal
             return key;
         }
 
+        /// <summary>
+        /// Synchronously attempts to get a resource from the in-memory cache only.
+        /// Returns true if found, false if a full async fetch is needed.
+        /// </summary>
+        internal bool TryGetResourceSync(string key, string culture, string category, out string value)
+        {
+            value = null;
+            if (_options.MemoryCacheDisabled || string.IsNullOrWhiteSpace(culture))
+            {
+                return false;
+            }
+
+            var categoryKey = $"{category}-{culture}";
+            if (_memCache.TryGetValue(categoryKey, out var cachedCultureCategory)
+                && cachedCultureCategory.Resources.TryGetValue(key, out var memResult))
+            {
+                value = memResult;
+                return true;
+            }
+
+            return false;
+        }
+
+        private string _cachedCultureName;
+
+        /// <summary>
+        /// Returns the cached culture name if available, or null if not yet resolved.
+        /// </summary>
+        internal string CachedCultureName => _cachedCultureName;
+
+        /// <summary>
+        /// Resolves and caches the culture name from the resource provider.
+        /// </summary>
+        internal async Task<string> GetOrResolveCultureName(IResourceProvider resourceProvider)
+        {
+            if (!string.IsNullOrWhiteSpace(_cachedCultureName))
+            {
+                return _cachedCultureName;
+            }
+            var name = await resourceProvider.GetCultureName();
+            _cachedCultureName = name;
+            return name;
+        }
+
         internal async Task ClearCache(string category, string cultureName, ILocalStorageService localStorageService)
         {
             await localStorageService.SetItemAsync<CultureCategoryResources>($"{category}-{cultureName}", null);

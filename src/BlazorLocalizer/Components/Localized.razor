@@ -27,14 +27,38 @@ else if(options.Value.ShowKeyAsPlaceholder)
 
     private bool _hasLoaded = false;
 
+    protected override void OnInitialized()
+    {
+        // Try synchronous memory cache lookup first to avoid a second render
+        if (!string.IsNullOrWhiteSpace(Key))
+        {
+            var culture = CultureName;
+            if (string.IsNullOrWhiteSpace(culture))
+            {
+                culture = cache.CachedCultureName;
+            }
+            if (!string.IsNullOrWhiteSpace(culture) && cache.TryGetResourceSync(Key, culture, Category, out var value))
+            {
+                _displayValue = value;
+                _hasLoaded = true;
+            }
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        // If already resolved synchronously, skip the async fetch
+        if (_hasLoaded)
+        {
+            return;
+        }
+
         if(!string.IsNullOrWhiteSpace(Key))
         {
             var culture = CultureName;
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = await resourceProvider.GetCultureName();
+                culture = await cache.GetOrResolveCultureName(resourceProvider);
             }
             _displayValue = await cache.GetResource(Key, culture, Category, resourceProvider, storageService);
             _hasLoaded = true;

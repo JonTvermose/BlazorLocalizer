@@ -1,6 +1,9 @@
 ﻿using BlazorLocalizer.Components;
 using Microsoft.AspNetCore.Components;
+using System;
 using System.Globalization;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using BlazorLocalizer.Internal;
@@ -137,15 +140,57 @@ namespace BlazorLocalizer
     private string GetCategoryName()
     {
       var frames = new StackTrace().GetFrames();
-      var currentNamespace = this.GetType().FullName;
+      var currentType = this.GetType();
+
       for (var i = 0; i < frames.Length; i++)
       {
         var methodInfo = frames[i].GetMethod();
-        var nameSpace = methodInfo.ReflectedType.FullName;
-        if (!nameSpace.Equals(currentNamespace, System.StringComparison.OrdinalIgnoreCase))
-          return nameSpace;
+        if (methodInfo == null)
+          continue;
+
+        var reflectedType = methodInfo.ReflectedType;
+        if (reflectedType == null)
+          continue;
+
+        // Skip our own type
+        if (reflectedType == currentType)
+          continue;
+
+        // Resolve compiler-generated types (closures, state machines, display classes)
+        // to their declaring (outer) type
+        var resolvedType = ResolveDeclaringType(reflectedType);
+
+        // Skip well-known framework namespaces that aren't user components
+        var fullName = resolvedType.FullName;
+        if (fullName == null)
+          continue;
+
+        if (fullName.StartsWith("Microsoft.AspNetCore.Components", StringComparison.Ordinal)
+            || fullName.StartsWith("Microsoft.Extensions.", StringComparison.Ordinal)
+            || fullName.StartsWith("System.", StringComparison.Ordinal)
+            || fullName.StartsWith("BlazorLocalizer.", StringComparison.Ordinal))
+          continue;
+
+        return fullName;
       }
       return null;
+    }
+
+    /// <summary>
+    /// Walks up the DeclaringType chain to resolve compiler-generated nested types
+    /// (closures, display classes, async state machines) to the actual user type.
+    /// </summary>
+    private static Type ResolveDeclaringType(Type type)
+    {
+      // Compiler-generated types are always nested and typically have [CompilerGenerated]
+      // or contain '<>' in their name (e.g. <>c__DisplayClass0_0, <BuildRenderTree>d__2)
+      while (type.DeclaringType != null
+             && (Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute))
+                 || type.Name.Contains("<>")))
+      {
+        type = type.DeclaringType;
+      }
+      return type;
     }
 
     public Task<string> L(string key, object o)
