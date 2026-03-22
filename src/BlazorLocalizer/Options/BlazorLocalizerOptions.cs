@@ -23,6 +23,12 @@ namespace BlazorLocalizer
         /// </summary>
         /// <remarks>Default value is true</remarks>
         public bool ShowKeyAsPlaceholder { get; set; } = true;
+
+        /// <summary>
+        /// When enabled, renders the Category as a hidden span after the localized value for debugging purposes.
+        /// </summary>
+        /// <remarks>Default value is false</remarks>
+        public bool DebugMode { get; set; } = false;
     }
 
     public class LocalStorageOptions

@@ -12,6 +12,10 @@ else if(options.Value.ShowKeyAsPlaceholder)
 {
     @Key
 }
+@if (options.Value.DebugMode)
+{
+    <span style="display: none">@Category</span>
+}
 
 @code {
     [Parameter]
