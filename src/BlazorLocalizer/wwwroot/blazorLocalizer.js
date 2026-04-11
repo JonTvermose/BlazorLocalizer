@@ -1,6 +1,5 @@
 export function getItem(key) {
-    var value = localStorage.getItem(key);
-    return value;
+    return localStorage.getItem(key);
 }
 
 export function setItem(key, value) {

@@ -1,6 +1,7 @@
 using Microsoft.JSInterop;
 using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlazorLocalizer.Internal
@@ -16,6 +17,7 @@ namespace BlazorLocalizer.Internal
     internal class LocalStorageAccessor : ILocalStorageAccessor, IAsyncDisposable
     {
         private readonly IJSRuntime _jsRuntime;
+        private readonly SemaphoreSlim _moduleLock = new SemaphoreSlim(1, 1);
         private IJSObjectReference _module;
         private readonly JsonSerializerOptions _jsonOptions;
 
@@ -31,12 +33,25 @@ namespace BlazorLocalizer.Internal
 
         private async Task<IJSObjectReference> GetModuleAsync()
         {
-            if (_module == null)
+            if (_module != null)
             {
-                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorLocalizer/blazorLocalizer.js");
+                return _module;
             }
-            return _module;
+
+            await _moduleLock.WaitAsync();
+            try
+            {
+                if (_module == null)
+                {
+                    _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/BlazorLocalizer/blazorLocalizer.js");
+                }
+                return _module;
+            }
+            finally
+            {
+                _moduleLock.Release();
+            }
         }
 
         public async Task<T> GetItemAsync<T>(string key)
