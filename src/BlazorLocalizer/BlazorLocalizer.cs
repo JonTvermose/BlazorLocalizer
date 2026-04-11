@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Blazored.LocalStorage;
 using BlazorLocalizer.Internal;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
@@ -17,15 +16,15 @@ namespace BlazorLocalizer
   {
     private readonly ResourceCache _resourceCache;
     private readonly IResourceProvider _resourceProvider;
-    private readonly ILocalStorageService _localStorageService;
+    private readonly ILocalStorageAccessor _localStorageAccessor;
     private readonly BlazorLocalizerOptions _options;
     private string _fallBackCultureName;
 
-    public BlazorLocalizer(ResourceCache resourceCache, IResourceProvider resourceProvider, ILocalStorageService localStorageService, IOptions<BlazorLocalizerOptions> options)
+    public BlazorLocalizer(ResourceCache resourceCache, IResourceProvider resourceProvider, ILocalStorageAccessor localStorageAccessor, IOptions<BlazorLocalizerOptions> options)
     {
       _resourceCache = resourceCache;
       _resourceProvider = resourceProvider;
-      _localStorageService = localStorageService;
+      _localStorageAccessor = localStorageAccessor;
       _options = options.Value;
     }
 
@@ -100,12 +99,12 @@ namespace BlazorLocalizer
 
     public async Task ClearCache()
     {
-      await _resourceCache.ClearCache(_localStorageService);
+      await _resourceCache.ClearCache(_localStorageAccessor);
     }
 
     public async Task ClearCache(string category, string cultureName)
     {
-      await _resourceCache.ClearCache(category, cultureName, _localStorageService);
+      await _resourceCache.ClearCache(category, cultureName, _localStorageAccessor);
     }
 
     public async Task<string> L(string key, CultureInfo culture)
@@ -122,14 +121,14 @@ namespace BlazorLocalizer
       var allResources = await _resourceProvider.GetAllResources(culture);
       if (allResources != null)
       {
-        await _resourceCache.PreloadResources(allResources, culture, _localStorageService);
+        await _resourceCache.PreloadResources(allResources, culture, _localStorageAccessor);
         return;
       }
 
       // Fall back to loading each configured category individually
       foreach (var category in _options.EagerLoadCategories)
       {
-        await _resourceCache.PreloadCategory(category, culture, _resourceProvider, _localStorageService);
+        await _resourceCache.PreloadCategory(category, culture, _resourceProvider, _localStorageAccessor);
       }
     }
     #endregion
@@ -145,7 +144,7 @@ namespace BlazorLocalizer
         }
         culture = _fallBackCultureName;
       }
-      return await _resourceCache.GetResource(key, culture, category, _resourceProvider, _localStorageService);
+      return await _resourceCache.GetResource(key, culture, category, _resourceProvider, _localStorageAccessor);
     }
 
     private RenderFragment GetLocalizedComponent(string key, string category, string culture)

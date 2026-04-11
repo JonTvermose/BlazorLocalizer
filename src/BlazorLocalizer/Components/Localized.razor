@@ -1,6 +1,6 @@
 ﻿@using System.Globalization
 @inject Internal.ResourceCache cache
-@inject Blazored.LocalStorage.ILocalStorageService storageService
+@inject Internal.ILocalStorageAccessor localStorageAccessor
 @inject IResourceProvider resourceProvider
 @inject Microsoft.Extensions.Options.IOptions<BlazorLocalizerOptions> options
 
@@ -64,7 +64,7 @@ else if(options.Value.ShowKeyAsPlaceholder)
             {
                 culture = await cache.GetOrResolveCultureName(resourceProvider);
             }
-            _displayValue = await cache.GetResource(Key, culture, Category, resourceProvider, storageService);
+            _displayValue = await cache.GetResource(Key, culture, Category, resourceProvider, localStorageAccessor);
             _hasLoaded = true;
             this.StateHasChanged();
         }

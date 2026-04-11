@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using BlazorLocalizer.Models;
+﻿using BlazorLocalizer.Models;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -21,7 +20,7 @@ namespace BlazorLocalizer.Internal
             _options = options.Value;
         }
 
-        public async Task<string> GetResource(string key, string culture, string category, IResourceProvider provider, ILocalStorageService localStorageService)
+        public async Task<string> GetResource(string key, string culture, string category, IResourceProvider provider, ILocalStorageAccessor localStorageAccessor)
         {
             var comparer = StringComparer.OrdinalIgnoreCase;
 
@@ -67,7 +66,7 @@ namespace BlazorLocalizer.Internal
             {
                 if (!_options.LocalStorageOptions.CacheDisabled)
                 {
-                    var cachedCategory = await localStorageService.GetItemAsync<CultureCategoryResources>(categoryKey);
+                    var cachedCategory = await localStorageAccessor.GetItemAsync<CultureCategoryResources>(categoryKey);
                     if (cachedCategory != null)
                     {
                         if (cachedCategory.UpdatedTime.Add(_options.LocalStorageOptions.CacheInvalidation) > DateTime.UtcNow)
@@ -101,7 +100,7 @@ namespace BlazorLocalizer.Internal
           }
                     if (!_options.LocalStorageOptions.CacheDisabled)
                     {
-                        await localStorageService.SetItemAsync(categoryKey, cachedCultureCategory);
+                        await localStorageAccessor.SetItemAsync(categoryKey, cachedCultureCategory);
                     }
                 }
             }
@@ -115,7 +114,7 @@ namespace BlazorLocalizer.Internal
             {
                 if (!_options.LocalStorageOptions.CacheDisabled)
                 {
-                    await localStorageService.SetItemAsync(categoryKey, cachedCultureCategory);
+                    await localStorageAccessor.SetItemAsync(categoryKey, cachedCultureCategory);
                 }
             }
             _semaphore.Release();
@@ -168,20 +167,20 @@ namespace BlazorLocalizer.Internal
             return name;
         }
 
-        internal async Task ClearCache(string category, string cultureName, ILocalStorageService localStorageService)
+        internal async Task ClearCache(string category, string cultureName, ILocalStorageAccessor localStorageAccessor)
         {
-            await localStorageService.SetItemAsync<CultureCategoryResources>($"{category}-{cultureName}", null);
+            await localStorageAccessor.RemoveItemAsync($"{category}-{cultureName}");
         }
 
-        internal async Task ClearCache(ILocalStorageService localStorageService)
+        internal async Task ClearCache(ILocalStorageAccessor localStorageAccessor)
         {
-            await localStorageService.ClearAsync();
+            await localStorageAccessor.ClearAsync();
         }
 
         /// <summary>
         /// Preloads resources for a set of categories into the memory cache and optionally localStorage.
         /// </summary>
-        internal async Task PreloadResources(IDictionary<string, IDictionary<string, string>> allResources, string culture, ILocalStorageService localStorageService)
+        internal async Task PreloadResources(IDictionary<string, IDictionary<string, string>> allResources, string culture, ILocalStorageAccessor localStorageAccessor)
         {
             var comparer = StringComparer.OrdinalIgnoreCase;
             foreach (var kvp in allResources)
@@ -202,7 +201,7 @@ namespace BlazorLocalizer.Internal
 
                 if (!_options.LocalStorageOptions.CacheDisabled)
                 {
-                    await localStorageService.SetItemAsync(categoryKey, cultureCategory);
+                    await localStorageAccessor.SetItemAsync(categoryKey, cultureCategory);
                 }
             }
         }
@@ -210,7 +209,7 @@ namespace BlazorLocalizer.Internal
         /// <summary>
         /// Preloads a single category's resources into the memory cache and optionally localStorage.
         /// </summary>
-        internal async Task PreloadCategory(string category, string culture, IResourceProvider provider, ILocalStorageService localStorageService)
+        internal async Task PreloadCategory(string category, string culture, IResourceProvider provider, ILocalStorageAccessor localStorageAccessor)
         {
             var comparer = StringComparer.OrdinalIgnoreCase;
             var categoryKey = $"{category}-{culture}";
@@ -236,7 +235,7 @@ namespace BlazorLocalizer.Internal
 
             if (!_options.LocalStorageOptions.CacheDisabled)
             {
-                await localStorageService.SetItemAsync(categoryKey, cultureCategory);
+                await localStorageAccessor.SetItemAsync(categoryKey, cultureCategory);
             }
         }
     }
