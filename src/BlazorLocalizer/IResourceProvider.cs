@@ -30,5 +30,17 @@ namespace BlazorLocalizer
         /// </summary>
         /// <returns></returns>
         Task<string> GetCultureName();
+
+        /// <summary>
+        /// Get all resources for all categories for a given cultureName.
+        /// Override this method to allow eager loading of all resources in a single call.
+        /// If not implemented, PreloadAsync() will fall back to loading each category individually from EagerLoadCategories.
+        /// </summary>
+        /// <param name="cultureName">Name of the culture, e.g. "en-US" or "en"</param>
+        /// <returns>Dictionary where the key is the category name and the value is a dictionary of resources for that category, or null if not implemented</returns>
+        Task<IDictionary<string, IDictionary<string, string>>> GetAllResources(string cultureName)
+        {
+            return Task.FromResult<IDictionary<string, IDictionary<string, string>>>(null);
+        }
     }
 }

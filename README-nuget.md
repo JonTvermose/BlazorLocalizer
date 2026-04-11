@@ -64,3 +64,42 @@ If you do not provide a category for the localized text (null, empty or white sp
 
 ## Usage (Blazor Server)
 Not currently supported.
+
+## Eager Loading
+You can preload resources at app startup to avoid loading delays. There are two approaches:
+
+### Option 1: Implement `GetAllResources` on your resource provider
+Override `GetAllResources` to return all resources for all categories in a single call:
+
+```c#
+public async Task<IDictionary<string, IDictionary<string, string>>> GetAllResources(string cultureName)
+{
+    return await _httpClient.GetFromJsonAsync<Dictionary<string, Dictionary<string, string>>>(
+        $"api/localization/all?culture={cultureName}");
+}
+```
+
+Then call `PreloadAsync()` at startup:
+
+```c#
+var host = builder.Build();
+await host.Services.GetRequiredService<IBlazorLocalizer>().PreloadAsync();
+await host.RunAsync();
+```
+
+### Option 2: Specify categories to eager load
+Specify individual categories to preload using `EagerLoadCategories`:
+
+```c#
+builder.Services.AddBlazorLocalization(config => {
+    config.EagerLoadCategories = new List<string>
+    {
+        "MyApp.Shared.Layout",
+        "MyApp.Pages.Home"
+    };
+});
+
+var host = builder.Build();
+await host.Services.GetRequiredService<IBlazorLocalizer>().PreloadAsync();
+await host.RunAsync();
+```

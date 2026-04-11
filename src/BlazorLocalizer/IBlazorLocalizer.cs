@@ -88,5 +88,18 @@ namespace BlazorLocalizer
     /// Clear cached values in memory and in localstorage for the given category and cultureName
     /// </summary>
     Task ClearCache(string category, string cultureName);
+
+    /// <summary>
+    /// Preloads resources into the cache on app startup.
+    /// First attempts to use the resource provider's GetAllResources() method for a single bulk load.
+    /// If that returns null, falls back to loading each category specified in EagerLoadCategories individually.
+    /// Call this after building the host but before running it:
+    /// <code>
+    /// var host = builder.Build();
+    /// await host.Services.GetRequiredService&lt;IBlazorLocalizer&gt;().PreloadAsync();
+    /// await host.RunAsync();
+    /// </code>
+    /// </summary>
+    Task PreloadAsync();
   }
 }

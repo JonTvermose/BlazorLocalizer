@@ -74,3 +74,65 @@ If you do not provide a category for the localized text, the calling class fulln
 
 ## Usage (Blazor Server)
 Not currently supported.
+
+## Eager Loading
+You can preload resources at app startup to avoid loading delays when the user navigates to a page. There are two approaches:
+
+### Option 1: Implement `GetAllResources` on your resource provider
+Override the `GetAllResources` method on your `IResourceProvider` implementation to return all resources for all categories in a single call. This is the most efficient approach as it requires only a single HTTP request.
+
+```c#
+public class YourResourceProvider : IResourceProvider
+{
+    // ... other methods ...
+
+    public async Task<IDictionary<string, IDictionary<string, string>>> GetAllResources(string cultureName)
+    {
+        // Return all resources grouped by category
+        return await _httpClient.GetFromJsonAsync<Dictionary<string, Dictionary<string, string>>>(
+            $"api/localization/all?culture={cultureName}");
+    }
+}
+```
+
+Then call `PreloadAsync()` at startup:
+
+```c#
+public static async Task Main(string[] args)
+{
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
+    builder.RootComponents.Add<App>("app");
+
+    builder.Services.AddTransient<IResourceProvider, YourResourceProvider>();
+    builder.Services.AddBlazorLocalization();
+
+    var host = builder.Build();
+    await host.Services.GetRequiredService<IBlazorLocalizer>().PreloadAsync();
+    await host.RunAsync();
+}
+```
+
+### Option 2: Specify categories to eager load
+If you don't implement `GetAllResources`, you can specify individual categories to preload using the `EagerLoadCategories` option. Each category will be loaded individually using the existing `GetCategoryResources` method.
+
+```c#
+public static async Task Main(string[] args)
+{
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
+    builder.RootComponents.Add<App>("app");
+
+    builder.Services.AddTransient<IResourceProvider, YourResourceProvider>();
+    builder.Services.AddBlazorLocalization(config => {
+        config.EagerLoadCategories = new List<string>
+        {
+            "MyApp.Shared.Layout",
+            "MyApp.Pages.Home",
+            "MyApp.Pages.About"
+        };
+    });
+
+    var host = builder.Build();
+    await host.Services.GetRequiredService<IBlazorLocalizer>().PreloadAsync();
+    await host.RunAsync();
+}
+```
