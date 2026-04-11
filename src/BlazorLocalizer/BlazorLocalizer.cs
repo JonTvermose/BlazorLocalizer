@@ -1,6 +1,7 @@
 ﻿using BlazorLocalizer.Components;
 using Microsoft.AspNetCore.Components;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using BlazorLocalizer.Internal;
 using System.Diagnostics;
+using Microsoft.Extensions.Options;
 
 namespace BlazorLocalizer
 {
@@ -16,13 +18,15 @@ namespace BlazorLocalizer
     private readonly ResourceCache _resourceCache;
     private readonly IResourceProvider _resourceProvider;
     private readonly ILocalStorageService _localStorageService;
+    private readonly BlazorLocalizerOptions _options;
     private string _fallBackCultureName;
 
-    public BlazorLocalizer(ResourceCache resourceCache, IResourceProvider resourceProvider, ILocalStorageService localStorageService)
+    public BlazorLocalizer(ResourceCache resourceCache, IResourceProvider resourceProvider, ILocalStorageService localStorageService, IOptions<BlazorLocalizerOptions> options)
     {
       _resourceCache = resourceCache;
       _resourceProvider = resourceProvider;
       _localStorageService = localStorageService;
+      _options = options.Value;
     }
 
     #region interface implementation
@@ -107,6 +111,26 @@ namespace BlazorLocalizer
     public async Task<string> L(string key, CultureInfo culture)
     {
       return await L(key, GetCategoryName(), culture);
+    }
+
+    public async Task PreloadAsync()
+    {
+      var culture = await _resourceProvider.GetCultureName() ?? CultureInfo.CurrentUICulture.Name;
+      _fallBackCultureName = culture;
+
+      // Try bulk loading all resources in a single call
+      var allResources = await _resourceProvider.GetAllResources(culture);
+      if (allResources != null)
+      {
+        await _resourceCache.PreloadResources(allResources, culture, _localStorageService);
+        return;
+      }
+
+      // Fall back to loading each configured category individually
+      foreach (var category in _options.EagerLoadCategories)
+      {
+        await _resourceCache.PreloadCategory(category, culture, _resourceProvider, _localStorageService);
+      }
     }
     #endregion
 

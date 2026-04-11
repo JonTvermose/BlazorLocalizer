@@ -177,5 +177,67 @@ namespace BlazorLocalizer.Internal
         {
             await localStorageService.ClearAsync();
         }
+
+        /// <summary>
+        /// Preloads resources for a set of categories into the memory cache and optionally localStorage.
+        /// </summary>
+        internal async Task PreloadResources(IDictionary<string, IDictionary<string, string>> allResources, string culture, ILocalStorageService localStorageService)
+        {
+            var comparer = StringComparer.OrdinalIgnoreCase;
+            foreach (var kvp in allResources)
+            {
+                var category = kvp.Key;
+                var resources = new Dictionary<string, string>(kvp.Value, comparer);
+                var categoryKey = $"{category}-{culture}";
+
+                var cultureCategory = new CultureCategoryResources
+                {
+                    Category = category,
+                    Culture = culture,
+                    Resources = resources,
+                    UpdatedTime = DateTime.UtcNow
+                };
+
+                _memCache[categoryKey] = cultureCategory;
+
+                if (!_options.LocalStorageOptions.CacheDisabled)
+                {
+                    await localStorageService.SetItemAsync(categoryKey, cultureCategory);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Preloads a single category's resources into the memory cache and optionally localStorage.
+        /// </summary>
+        internal async Task PreloadCategory(string category, string culture, IResourceProvider provider, ILocalStorageService localStorageService)
+        {
+            var comparer = StringComparer.OrdinalIgnoreCase;
+            var categoryKey = $"{category}-{culture}";
+
+            // Skip if already cached in memory
+            if (_memCache.ContainsKey(categoryKey))
+            {
+                return;
+            }
+
+            var resources = await provider.GetCategoryResources(category, culture);
+            resources = new Dictionary<string, string>(resources, comparer);
+
+            var cultureCategory = new CultureCategoryResources
+            {
+                Category = category,
+                Culture = culture,
+                Resources = resources,
+                UpdatedTime = DateTime.UtcNow
+            };
+
+            _memCache[categoryKey] = cultureCategory;
+
+            if (!_options.LocalStorageOptions.CacheDisabled)
+            {
+                await localStorageService.SetItemAsync(categoryKey, cultureCategory);
+            }
+        }
     }
 }

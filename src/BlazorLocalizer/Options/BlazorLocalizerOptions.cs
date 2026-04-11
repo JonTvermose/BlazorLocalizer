@@ -29,6 +29,14 @@ namespace BlazorLocalizer
         /// </summary>
         /// <remarks>Default value is false</remarks>
         public bool DebugMode { get; set; } = false;
+
+        /// <summary>
+        /// List of category names to eager load on app startup when calling PreloadAsync().
+        /// Each category will be fetched from the resource provider and cached in memory (and localStorage if enabled).
+        /// This is only used as a fallback if the resource provider does not implement GetAllResources().
+        /// </summary>
+        /// <remarks>Default value is an empty list</remarks>
+        public IList<string> EagerLoadCategories { get; set; } = new List<string>();
     }
 
     public class LocalStorageOptions
