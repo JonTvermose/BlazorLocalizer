@@ -44,7 +44,7 @@ namespace BlazorLocalizer.Internal
                 if (_module == null)
                 {
                     _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/BlazorLocalizer/blazorLocalizer.js");
+                        "import", "./_content/Tvermose.BlazorLocalizer/blazorLocalizer.js");
                 }
                 return _module;
             }
