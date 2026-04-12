@@ -1,10 +1,6 @@
-﻿using Blazored.LocalStorage;
-using BlazorLocalizer.Internal;
+﻿using BlazorLocalizer.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace BlazorLocalizer
 {
@@ -13,7 +9,7 @@ namespace BlazorLocalizer
         public static IServiceCollection AddBlazorLocalization(this IServiceCollection services, Action<BlazorLocalizerOptions> config)
         {
             return services
-                .AddBlazoredLocalStorage()
+                .AddSingleton<ILocalStorageAccessor, LocalStorageAccessor>()
                 .AddTransient<IBlazorLocalizer, BlazorLocalizer>()
                 .AddSingleton<ResourceCache>()
                 .Configure<BlazorLocalizerOptions>(cfg => config?.Invoke(cfg));
@@ -22,7 +18,7 @@ namespace BlazorLocalizer
         public static IServiceCollection AddBlazorLocalization(this IServiceCollection services)
         {
             return services
-                .AddBlazoredLocalStorage()
+                .AddSingleton<ILocalStorageAccessor, LocalStorageAccessor>()
                 .AddTransient<IBlazorLocalizer, BlazorLocalizer>()
                 .AddSingleton<ResourceCache>();
         }
