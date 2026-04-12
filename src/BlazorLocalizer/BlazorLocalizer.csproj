@@ -16,12 +16,12 @@ Please refer to readme or project URL for a complete setup and usage guide.</Des
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JonTvermose/BlazorLocalizer</RepositoryUrl>
-    <Version>11.0.2</Version>
+    <Version>11.0.3</Version>
     <Copyright />
     <PackageProjectUrl>https://github.com/JonTvermose/BlazorLocalizer</PackageProjectUrl>
     <RepositoryType>Github</RepositoryType>
-    <AssemblyVersion>11.0.2.0</AssemblyVersion>
-    <FileVersion>11.0.2.0</FileVersion>
+    <AssemblyVersion>11.0.3.0</AssemblyVersion>
+    <FileVersion>11.0.3.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
