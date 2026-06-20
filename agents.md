@@ -108,6 +108,11 @@ dotnet build
   - Default: 3 days expiration
   - Can be disabled with `CacheDisabled = true`
   - Configurable expiration with `CacheInvalidation` TimeSpan
+  - **Graceful degradation**: when JS interop is unavailable (Blazor Server prerender, or
+    .NET MAUI/WPF/WinForms BlazorWebView before first render), the localStorage layer treats
+    reads as cache misses and writes as no-ops instead of throwing. Lookups fall back to the
+    `IResourceProvider` and localStorage resumes automatically once JS is ready. The failure is
+    never latched — each call retries the module import. See `LocalStorageAccessor.IsJsUnavailable`.
 
 ### Blazor Server Support
 **Not Currently Supported** - The library is designed specifically for Blazor WebAssembly. The localStorage dependency and async patterns are optimized for WebAssembly scenarios.

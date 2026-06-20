@@ -14,14 +14,14 @@ Inject 'IBlazorLocalizer Loc' and use 'Loc["LocalizedStringKeyHere"]'  or use th
 Please refer to readme or project URL for a complete setup and usage guide.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>Localized lookups no longer throw when JS interop is unavailable (Blazor Server prerendering; .NET MAUI/WPF/WinForms BlazorWebView before first render). The localStorage cache degrades to the configured IResourceProvider and resumes automatically once JS is ready.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JonTvermose/BlazorLocalizer</RepositoryUrl>
-    <Version>11.0.4</Version>
+    <Version>11.1.0</Version>
     <Copyright />
     <PackageProjectUrl>https://github.com/JonTvermose/BlazorLocalizer</PackageProjectUrl>
     <RepositoryType>Github</RepositoryType>
-    <AssemblyVersion>11.0.4.0</AssemblyVersion>
-    <FileVersion>11.0.4.0</FileVersion>
+    <AssemblyVersion>11.1.0.0</AssemblyVersion>
+    <FileVersion>11.1.0.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
